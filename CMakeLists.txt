@@ -364,7 +364,7 @@ if(WITH_QT)
 endif()
 
 # Find VTK
-option(WITH_VTK "Build VTK-Visualizations" TRUE)
+option(WITH_VTK "Build VTK-Visualizations" FALSE)
 if(WITH_VTK AND NOT ANDROID)
   set(PCL_VTK_COMPONENTS
     vtkChartsCore
@@ -445,7 +445,7 @@ if(WITH_PCAP)
 endif()
 
 # OpenGL and GLUT
-option(WITH_OPENGL "Support for OpenGL" TRUE)
+option(WITH_OPENGL "Support for OpenGL" FALSE)
 if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
 endif()
