@@ -206,7 +206,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives (Eige
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
     std::vector<float> distances;
-    target_cells_.radiusSearch (x_trans_pt, resolution_, neighborhood, distances);
+    target_cells_.neighborSearch(x_trans_pt, neighborhood);
 
     for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {
@@ -421,7 +421,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::M
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
     std::vector<float> distances;
-    target_cells_.radiusSearch (x_trans_pt, resolution_, neighborhood, distances);
+    target_cells_.neighborSearch(x_trans_pt, neighborhood);
 
     for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {

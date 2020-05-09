@@ -504,6 +504,37 @@ namespace pcl
         return (radiusSearch (cloud.points[index], radius, k_leaves, k_sqr_distances, max_nn));
       }
 
+      inline int
+      neighborSearch (const PointT &p, std::vector<LeafConstPtr> &k_leaves)
+      {
+        k_leaves.clear();
+
+        // Generate index associated with p
+        int ijk0 = static_cast<int> (std::floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (std::floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (std::floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
+
+        // Compute the centroid leaf index
+        int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+
+        auto comp = [](std::pair<std::size_t, std::vector<std::size_t>> const &p, int i) -> bool {
+          return p.first < i;
+        };
+
+        auto it = std::lower_bound(neighbors_.begin(), neighbors_.end(), idx, comp);
+
+        if (it == neighbors_.end() || it->first != idx) return 0;
+
+        int count = it->second.size();
+
+        k_leaves.reserve(count);
+        for (std::size_t neighbor : it->second) {
+          k_leaves.push_back(&leaves_[neighbor]);
+        }
+
+        return count;
+      }
+
     protected:
 
       /** \brief Filter cloud and initializes voxel structure.
@@ -531,6 +562,8 @@ namespace pcl
 
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
       KdTreeFLANN<PointT> kdtree_;
+
+      std::vector<std::pair<std::size_t, std::vector<std::size_t>>> neighbors_;
   };
 }
 
