@@ -256,7 +256,7 @@ namespace pcl
         target_cells_.setLeafSize (resolution_, resolution_, resolution_);
         target_cells_.setInputCloud ( target_ );
         // Initiate voxel structure.
-        target_cells_.filter (true);
+        target_cells_.filter (false);
       }
 
       /** \brief Compute derivatives of probability function w.r.t. the transformation vector.

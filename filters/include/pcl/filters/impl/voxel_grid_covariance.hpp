@@ -378,6 +378,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   }
 
   neighbors_.clear();
+  neighbors_.reserve(neighbors.size());
   for (std::pair<std::size_t, std::vector<std::size_t>> neighbor : neighbors) {
     neighbors_.push_back(neighbor);
   }
