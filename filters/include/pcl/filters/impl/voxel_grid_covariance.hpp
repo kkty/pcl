@@ -278,8 +278,6 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  std::map<std::size_t, std::vector<std::size_t>> neighbors;
-
   for (typename std::map<std::size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
@@ -369,18 +367,14 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
           for (int dz = -1; dz <= 1; dz++) {
-            std::size_t neighbor_idx = idx + dx * divb_mul_[0] + dy * divb_mul_[1] + dz * divb_mul_[2];
-            neighbors[neighbor_idx].push_back(idx);
+            if (std::abs(dx) + std::abs(dy) + std::abs(dz) <= 1) {
+              std::size_t neighbor_idx = idx + dx * divb_mul_[0] + dy * divb_mul_[1] + dz * divb_mul_[2];
+              neighbors_[neighbor_idx].push_back(&leaf);
+            }
           }
         }
       }
     }
-  }
-
-  neighbors_.clear();
-  neighbors_.reserve(neighbors.size());
-  for (std::pair<std::size_t, std::vector<std::size_t>> neighbor : neighbors) {
-    neighbors_.push_back(neighbor);
   }
 
   output.width = static_cast<std::uint32_t> (output.points.size ());
