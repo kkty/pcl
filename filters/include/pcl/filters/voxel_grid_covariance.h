@@ -506,7 +506,7 @@ namespace pcl
       }
 
       inline int
-      neighborSearch (const PointT &p, std::vector<LeafConstPtr> &k_leaves)
+      neighborSearch (const PointT &p, double radius, std::vector<LeafConstPtr> &k_leaves)
       {
         k_leaves.clear();
 
@@ -525,7 +525,9 @@ namespace pcl
 
         k_leaves.reserve(count);
         for (LeafConstPtr neighbor : it->second) {
-          k_leaves.push_back(neighbor);
+          Eigen::Vector3d centroid = neighbor->getMean();
+          if (std::pow(centroid[0] - p.x, 2) + std::pow(centroid[1] - p.y, 2) + std::pow(centroid[2] - p.z, 2) < std::pow(radius, 2))
+            k_leaves.push_back(neighbor);
         }
 
         return count;

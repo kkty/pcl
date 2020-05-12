@@ -367,10 +367,8 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
           for (int dz = -1; dz <= 1; dz++) {
-            if (std::abs(dx) + std::abs(dy) + std::abs(dz) <= 1) {
-              std::size_t neighbor_idx = idx + dx * divb_mul_[0] + dy * divb_mul_[1] + dz * divb_mul_[2];
-              neighbors_[neighbor_idx].push_back(&leaf);
-            }
+            std::size_t neighbor_idx = idx + dx * divb_mul_[0] + dy * divb_mul_[1] + dz * divb_mul_[2];
+            neighbors_[neighbor_idx].push_back(&leaf);
           }
         }
       }
