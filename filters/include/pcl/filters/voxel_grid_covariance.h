@@ -39,6 +39,7 @@
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
+#include <unordered_map>
 #include <map>
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -505,7 +506,7 @@ namespace pcl
       }
 
       inline int
-      neighborSearch (const PointT &p, std::vector<LeafConstPtr> &k_leaves)
+      neighborSearch (const PointT &p, double radius, std::vector<LeafConstPtr> &k_leaves)
       {
         k_leaves.clear();
 
@@ -517,19 +518,19 @@ namespace pcl
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
-        auto comp = [](std::pair<std::size_t, std::vector<std::size_t>> const &p, int i) -> bool {
-          return p.first < i;
-        };
-
-        auto it = std::lower_bound(neighbors_.begin(), neighbors_.end(), idx, comp);
-
-        if (it == neighbors_.end() || it->first != idx) return 0;
+        auto it = neighbors_.find(idx);
+        if (it == neighbors_.end()) {
+          return 0;
+        }
 
         int count = it->second.size();
-
         k_leaves.reserve(count);
-        for (std::size_t neighbor : it->second) {
-          k_leaves.push_back(&leaves_[neighbor]);
+
+        for (LeafConstPtr neighbor : it->second) {
+          Eigen::Vector3d centroid = neighbor->getMean();
+          if (std::pow(centroid[0] - p.x, 2) + std::pow(centroid[1] - p.y, 2) + std::pow(centroid[2] - p.z, 2) < std::pow(radius, 2)) {
+            k_leaves.push_back(neighbor);
+          }
         }
 
         return count;
@@ -563,7 +564,7 @@ namespace pcl
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
       KdTreeFLANN<PointT> kdtree_;
 
-      std::vector<std::pair<std::size_t, std::vector<std::size_t>>> neighbors_;
+      std::unordered_map<std::size_t, std::vector<LeafConstPtr>> neighbors_;
   };
 }
 
