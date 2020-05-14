@@ -564,7 +564,7 @@ namespace pcl
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
       KdTreeFLANN<PointT> kdtree_;
 
-      std::unordered_map<std::size_t, std::vector<LeafConstPtr>> neighbors_;
+      std::unordered_map<int, std::vector<LeafConstPtr>> neighbors_;
   };
 }
 
